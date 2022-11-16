@@ -1,0 +1,152 @@
+---
+title: "Monetary policy and asset pricing - Assignment no. 4"
+author: "Federico Vicentini"
+date: "06/11/2022"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(pandoc)
+```
+
+
+
+```{r p0, message=FALSE, echo=FALSE}
+# Clear the variables
+rm(list = ls())
+
+# Install packages
+packages <- c("matlib", "rmarkdown", "tinytex","plotly","rgl","knitr","pandoc")
+new.packages <- packages[!(packages %in% installed.packages()[, "Package"])]
+if (length(new.packages)) install.packages(new.packages)
+invisible(lapply(packages, library, character.only = TRUE))
+# Load packages
+library(matlib)
+library(scatterplot3d)
+library(plotly)
+library(rgl)
+library(knitr)
+options(digits = 15) 
+library(pandoc)
+```
+
+
+## Exercise 1:
+
+```{r p1, message=FALSE, echo=TRUE}
+# Clear the variables
+rm(list = ls())
+
+
+# Set the working directory to source file location with
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+setwd(getwd())
+
+# ~  (this character will be needed later for copypasting)
+phi <- 0.3
+matrix <- matrix(0,2,2, dimnames=list(c("h","l"),c("h","l")))
+matrix[1,] <- c(phi, (1-phi))
+matrix[2,] <- c((1-phi), phi)
+kable(matrix,   format = "pipe",
+                row.names=TRUE, 
+                col.names=c("h","l"))
+
+beta <- 0.96
+gamma <- 2
+h <- 1.05
+l <- 0.97
+```
+
+Since now the exogenous endowment shock
+is a two states Markov process, defined as:
+
+$$\frac{\Omega_{t}}{\Omega_{t-1}}=\omega_{t}\quad 
+  with \; \omega_{t}\epsilon (h,l)$$
+
+## CASE 1: (t = state h)
+
+```{r p2, message=FALSE, echo=TRUE}
+
+#CASE 1: 
+#In this case we find ourselves in h at time t
+
+pi <- matrix(NA, 2,2)
+pi[1,]=c(phi, 2*(phi)^2+1-2*phi)
+pi[2,]=c(1-phi, (2*phi)-2*(phi)^2)
+
+yt_1=-log(beta*(pi[1,1]*(h)^(-gamma)+pi[2,1]*(l)^(-gamma)))
+yt_2=-0.5*log(((beta)^2)*(pi[1,1]*pi[1,2]*(h*h)^(-gamma) + 
+                          pi[2,1]*pi[2,2]*(l*l)^(-gamma) + 
+                          pi[1,1]*pi[2,2]*(h*l)^(-gamma) + 
+                          pi[2,1]*pi[1,2]*(l*h)^(-gamma)))
+
+yieldcurve=c(yt_1,yt_2)
+plot(yieldcurve, type="b", main="Yield curve with t = h")
+
+yt_0=-log((h)^(-gamma))
+yieldcurve=c(yt_0,yt_1,yt_2)
+plot(yieldcurve, type="b", main="Yield curve with t = h")
+
+yieldcurve
+
+```
+
+## CASE 2: (t = state h)
+
+
+```{r p3, message=FALSE, echo=TRUE}
+
+#CASE 2: 
+#In this case we find ourselves in l at time t
+
+pi2 <- matrix(NA, 2,2)
+pi2[1,]=c(1-phi, (2*phi)-2*(phi)^2)
+pi2[2,]=c(phi, 2*(phi)^2+1-2*phi)
+
+yt_1l=-log(beta*(pi2[1,1]*(h)^(-gamma)+pi2[2,1]*(l)^(-gamma)))
+yt_2l=-0.5*log(((beta)^2)*(pi2[1,1]*pi2[1,2]*(h*h)^(-gamma) + 
+                          pi2[2,1]*pi2[2,2]*(l*l)^(-gamma) + 
+                          pi2[1,1]*pi2[2,2]*(h*l)^(-gamma) + 
+                          pi2[2,1]*pi2[1,2]*(l*h)^(-gamma)))
+
+yieldcurve_l=c(yt_1l,yt_2l)
+plot(yieldcurve_l, type="b", main="Yield curve with t = l")
+
+
+yt_0l=-log((l)^(-gamma))
+yieldcurve_l=c(yt_0l,yt_1l,yt_2l)
+plot(yieldcurve_l, type="b",  main="Yield curve with t = l")
+
+
+yieldcurve_l
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

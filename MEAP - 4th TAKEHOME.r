@@ -40,11 +40,13 @@ yt_2=-0.5*log(((beta)^2)*(pi[1,1]*pi[1,2]*(h*h)^(-gamma) +
                           pi[2,1]*pi[1,2]*(l*h)^(-gamma)))
 
 yieldcurve=c(yt_1,yt_2)
-plot(yieldcurve, type="b")
+plot(yieldcurve, type="b", main="Yield curve with t=h")
 
 yt_0=-log((h)^(-gamma))
 yieldcurve=c(yt_0,yt_1,yt_2)
 plot(yieldcurve, type="b")
+
+yieldcurve
 
 #CASE 2: 
 #In this case we find ourselves in l at time t
@@ -53,19 +55,25 @@ pi2 <- matrix(NA, 2,2)
 pi2[1,]=c(1-phi, (2*phi)-2*(phi)^2)
 pi2[2,]=c(phi, 2*(phi)^2+1-2*phi)
 
-yt_1=-log(beta*(pi2[1,1]*(h)^(-gamma)+pi2[2,1]*(l)^(-gamma)))
-yt_2=-0.5*log(((beta)^2)*(pi2[1,1]*pi2[1,2]*(h*h)^(-gamma) + 
+yt_1l=-log(beta*(pi2[1,1]*(h)^(-gamma)+pi2[2,1]*(l)^(-gamma)))
+yt_2l=-0.5*log(((beta)^2)*(pi2[1,1]*pi2[1,2]*(h*h)^(-gamma) + 
                           pi2[2,1]*pi2[2,2]*(l*l)^(-gamma) + 
                           pi2[1,1]*pi2[2,2]*(h*l)^(-gamma) + 
                           pi2[2,1]*pi2[1,2]*(l*h)^(-gamma)))
 
-yieldcurve=c(yt_1,yt_2)
-plot(yieldcurve, type="b")
+yieldcurve_l=c(yt_1l,yt_2l)
+plot(yieldcurve_l, type="b")
 
 
-yt_0=-log((l)^(-gamma))
-yieldcurve=c(yt_0,yt_1,yt_2)
-plot(yieldcurve, type="b")
+yt_0l=-log((l)^(-gamma))
+yieldcurve_l=c(yt_0l,yt_1l,yt_2l)
+plot(yieldcurve_l, type="b")
+
+
+yieldcurve_l
+
+
+
 
 
 
