@@ -122,8 +122,16 @@ $$y_{t+2}=-\frac{1}{2}ln \left(\beta^{2}
                             p_{1}(l) p_{2}(h) (lh)^{-\gamma}
               \right)\right)$$
 
+We wanted also to have a measure of the short-term interest rate in 
+period t. In the real world, this is the overnight interest rate, set
+by the Central Bank. To make an approximation, we used the same equation
+used for $y_{t+1}$ setting $p_{1}(h)=1$ since we know we are in $h$ at
+time $t$. Also, $\beta$ has exponent $0$ so it is equal to $1$.
+Thus, equation for our "short-term" interest rate is:
 
+$$y_{t}=-ln \left((h)^{-\gamma}\right)$$
 
+Let's look now at the code and the output:
 
 ```{r p2, message=FALSE, echo=TRUE}
 
@@ -151,8 +159,23 @@ yieldcurve
 
 ```
 
+In this case, the yield curve starts at about $9.75\%$, then it presents
+a downward slope going to $2.49\%$ in the second period (indicating the
+high probability of a recession in $t+1$) and then going up again to a yield
+of $4.68\%$ in $t+2$ (indicating the prediction of a recovery in the second
+period).
+
+We observe that the curve, even predicting a recovery in the long term, does
+not return to the first-period yield level. We believe this is because 
+in the starting period the state $h$ is certain, while in the second it is 
+only slightly more likely than a recession (looking at our results, we have $58\%$
+probability of being in the high state), thus the yield is lower.
+
+
+
 ## CASE 2: (t = state h)
 
+In the second case the procedure remains exactly identical
 
 ```{r p3, message=FALSE, echo=TRUE}
 
