@@ -65,6 +65,11 @@ is a two states Markov process, defined as:
 $$\frac{\Omega_{t}}{\Omega_{t-1}}=\omega_{t}\quad 
   with \; \omega_{t}\epsilon (h,l)$$
 
+With the following symmetric transition matrix:
+
+$$\Pi = \left[\begin{matrix}\phi & (1-\phi) \\ (1-\phi) & \phi \\ \end{matrix}\right]$$
+
+
 ## CASE 1: (t = state h)
 
 ```{r p2, message=FALSE, echo=TRUE}
