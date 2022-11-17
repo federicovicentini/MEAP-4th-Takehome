@@ -133,7 +133,7 @@ $$y_{t}=-ln \left((h)^{-\gamma}\right)$$
 
 Let's look now at the code and the output:
 
-```{r p2, message=FALSE, echo=TRUE}
+```{r p2, message=FALSE, echo=TRUE, dev="svg"}
 
 #CASE 1: 
 #In this case we find ourselves in h at time t
@@ -149,13 +149,20 @@ yt_2=-0.5*log(((beta)^2)*(pi[1,1]*pi[1,2]*(h*h)^(-gamma) +
                           pi[2,1]*pi[1,2]*(l*h)^(-gamma)))
 
 yieldcurve=c(yt_1,yt_2)
-plot(yieldcurve, type="b", main="Yield curve with t = h")
+plot(yieldcurve, type="o",  main="Yield curve with t = h",
+                            xlab= "Time",
+                            ylab= "Yield",
+                            col="dark green")
+
 
 yt_0=-log((h)^(-gamma))
 yieldcurve=c(yt_0,yt_1,yt_2)
-plot(yieldcurve, type="b", main="Yield curve with t = h")
+plot(yieldcurve, type="o",  main="Yield curve with t = h",
+                            xlab= "Time",
+                            ylab= "Yield",
+                            col="dark green")
 
-yieldcurve
+yieldcurve * 100
 
 ```
 
@@ -165,7 +172,7 @@ high probability of a recession in $t+1$) and then going up again to a yield
 of $4.68\%$ in $t+2$ (indicating the prediction of a recovery in the second
 period).
 
-We observe that the curve, even predicting a recovery in the long term, does
+We observe that even if the curve predicts a recovery in the long term, does
 not return to the first-period yield level. We believe this is because 
 in the starting period the state $h$ is certain, while in the second it is 
 only slightly more likely than a recession (looking at our results, we have $58\%$
@@ -173,11 +180,14 @@ probability of being in the high state), thus the yield is lower.
 
 
 
-## CASE 2: (t = state h)
+## CASE 2: (t = state l)
 
-In the second case the procedure remains exactly identical
+In the second case the procedure remains exactly identical, but the
+two rows of the probability matrix are inverted with respect to the first case.
 
-```{r p3, message=FALSE, echo=TRUE}
+So, we report below the code and the related plots:
+
+```{r p3, message=FALSE, echo=TRUE, dev="svg"}
 
 #CASE 2: 
 #In this case we find ourselves in l at time t
@@ -193,13 +203,265 @@ yt_2l=-0.5*log(((beta)^2)*(pi2[1,1]*pi2[1,2]*(h*h)^(-gamma) +
                           pi2[2,1]*pi2[1,2]*(l*h)^(-gamma)))
 
 yieldcurve_l=c(yt_1l,yt_2l)
-plot(yieldcurve_l, type="b", main="Yield curve with t = l")
+plot(yieldcurve_l, type="o",  main="Yield curve with t = l",
+                              xlab= "Time",
+                              ylab= "Yield",
+                              col="red")
 
 
 yt_0l=-log((l)^(-gamma))
 yieldcurve_l=c(yt_0l,yt_1l,yt_2l)
-plot(yieldcurve_l, type="b",  main="Yield curve with t = l")
+plot(yieldcurve_l, type="o",  main= "Yield curve with t = l",
+                              xlab= "Time",
+                              ylab= "Yield",
+                              col="red")
 
 
-yieldcurve_l
+yieldcurve_l * 100
+```
+
+
+In this case, the yield curve starts at about $-6.09\%$, then it presents
+an upward slope going to $8.88\%$ in the second period (indicating the
+high probability of an expansion in $t+1$) and then going down again to a yield
+of $6.58\%$ in $t+2$ (indicating the prediction of a recession in the second
+period).
+
+We observe that even if the curve predicts a recession in the long term, it does
+not return to the first-period yield level. We believe this is because 
+in the starting period the state $l$ is certain, while in the second it is 
+only slightly more likely than an expansion (looking at our results, we have $58\%$
+probability of being in the low state), thus the yield is naturally higher.
+
+Note that in both cases the yield $y_{t}$ is practically a "fictional" one. In the first 
+case, the yield is much higher than what we would typically see in the real world economy, since
+we do not ever have the complete certainty of being in a high state of growth, thus the real yield is
+going to be much lower. In the second case, the yield is much lower than what we would observe. 
+Also, let's recall that in reality, these short-term interest rate are mandated by the CBs, not by
+the market itself.
+
+
+## Comment on both cases
+
+We can observe that, even if the the only difference in the probability matrix
+in the two cases are the inverted rows, the yields are not "inverted".
+In fact, the yield curve of the first case is always below the one for the 
+second case (excluding $y_{t}$).
+
+```{r p4, message=FALSE, echo=FALSE, dev="svg"}
+plot(yieldcurve,  main= "Graph of both cases",
+                  xlab= "Time",
+                  ylab= "Yield",
+                  col= "dark green",
+                  type="o")
+par(new=TRUE)
+plot(yieldcurve_l,  col="red", 
+                    type="o", 
+                    main ="", 
+                    xlab="", 
+                    ylab="", 
+                    axes=FALSE)
+```
+
+In fact, we cannot even state that the slope of the curve is the same in absolute value.
+The two yield curves present different slopes, and we can motivate this by considering the fact
+that, since we are dealing with a two-period framework, losing $3\%$ and then gaining $5\%$ (which
+is the equivalent of ending up in $l$ and then going to $h$) does not result in the same
+gains as the opposite path (gaining $5\%$ and then losing $3\%$). If we add to this the fact that
+gains and losses are not equal in magnitude, we have a good explanation of why the two curves
+behave in a different way.
+
+# EXERCISE 2
+
+```{r ex2, include=FALSE}
+#knitr::opts_chunk$set(echo = FALSE) # nolint
+library(xts)
+library(zoo)
+library(MultipleBubbles)
+library(aTSA)
+library(urca)
+library(flexmix)
+library(forecast)
+library(vars)
+library(ggplot2)
+library(knitr)
+#function
+adf_test <- function(timeseries) { # nolint
+    out <- matrix(NA, nrow = 0, ncol = 7)
+    out_colnames <- c("N of lags", "Type", "lag", "ADF",
+     "p.value", "Stationary at 5%", "Stationary at 10%")
+    colnames(out) <- out_colnames
+    for (count in 1:12) {
+        i   <-  adf.test(timeseries, nlag = count, output = FALSE)
+        for (count2 in 1:3) {
+           for (count3 in 1:count) {
+            if (count2 == 1) {
+               rw <- c(count, count2, count3,
+                i$type1[count3, 2], i$type1[count3, 3], NA, NA)
+            } else if (count2 == 2) {
+               rw <- c(count, count2, count3,
+                i$type2[count3, 2], i$type2[count3, 3], NA, NA)
+            } else {
+                rw <- c(count, count2, count3,
+                i$type3[count3, 2], i$type3[count3, 3], NA, NA)
+            }
+            names(rw) <- out_colnames
+            rw[1] <- as.integer(rw[1])
+            rw[2] <- as.integer(rw[2])
+            rw[3] <- as.integer(rw[3])
+            rw["ADF"] <- round(rw["ADF"], digits = 4)
+            rw["p.value"] <- round(rw["p.value"], digits = 4)
+            if (rw["p.value"] > .05) {
+                rw[6] <- "No Stat."
+                } else {
+                rw[6] <- "Stat"
+                }
+            if (rw["p.value"] > .01) {
+                rw[7] <- "No Stat."
+                } else {
+                rw[7] <- "Stat"
+                }
+            if (rw["Type"] == 1) {
+                rw["Type"] <- "no drift no trend"
+            } else if (rw["Type"] == 2) {
+                rw["Type"] <- "with drift no trend"
+            } else {
+                rw["Type"] <- "with drift and trend"
+            }
+            out <- rbind(out, rw)
+           }
+        }
+    }
+return(out)
+}
+time_series_plot <- function(timeseries) {
+    out1 <- plot(timeseries)
+    out2 <- acf(timeseries)
+    out3 <- pacf(timeseries)
+    #Stationarity
+    out4 <- adf_test(timeseries)
+    out5 <- ADF_IC(ts(timeseries), adflag = 12, mflag = 1, IC = 1)
+    out <- list(out1, out2, out3, out4, out5)
+    return(out)
+}
+bic_score <- function(k, n, l) {
+    x <- k * log(n) - 2 * l
+    return(x)
+}
+#best arima select with BIC
+bestarima <- function(timeseries, maxlag) {
+    plag    <- 1:maxlag
+    qlag    <- 1:maxlag
+    model1   <- matrix(NA, nrow = 0, ncol = 3)
+    colnames(model1) <- c("p", "q", "BIC")
+    for (p in plag) {
+       for (q in qlag) {
+        out <- tryCatch(
+        {
+            # Just to highlight: if you want to use more than one 
+            # R expression in the "try" part then you'll have to 
+            # use curly brackets.
+            # 'tryCatch()' will return the last evaluated expression 
+            # in case the "try" part was completed successfully
+            arima(timeseries, order = c(p, 0, q))
+            # The return value of `readLines()` is the actual value 
+            # that will be returned in case there is no condition 
+            # (e.g. warning or error). 
+            # You don't need to state the return value via `return()` as code 
+            # in the "try" part is not wrapped inside a function (unlike that
+            # for the condition handlers for warnings and error below)
+        },
+        error=function(cond) {
+            # Choose a return value in case of error
+            return(NA)
+        },
+        warning=function(cond) {
+            # Choose a return value in case of warning
+            return(NA)
+        }
+    )    
+    if(any(!is.na(out))){
+        x <- arima(timeseries, order = c(p, 0, q))
+        x_bic <- bic_score(length(x$coef), x$nobs, x$loglik)
+        
+        
+       } else {
+          x_bic <- 9999
+       }
+       model1 <- rbind(model1, c(p, q, x_bic))
+    }
+    }
+    p <- model1[which.min(model1[, "BIC"]), "p"]
+    q <- model1[which.min(model1[, "BIC"]), "q"]
+    out <- arima(timeseries, order = c(p, 0, q))
+    acf(out$residuals)
+   return(c(p, q))
+}
+arroots <- function(object){
+  if(!("Arima" %in% class(object)) &
+     !("ar" %in% class(object)))
+    stop("object must be of class Arima or ar")
+  if("Arima" %in% class(object))
+    parvec <- object$model$phi
+  else
+    parvec <- object$ar
+  if(length(parvec) > 0)
+  {
+    last.nonzero <- max(which(abs(parvec) > 1e-08))
+    if (last.nonzero > 0)
+      return(structure(list(
+          roots=polyroot(c(1,-parvec[1:last.nonzero])),
+          type="AR"),
+        class='armaroots'))
+  }
+  return(structure(list(roots=numeric(0), type="AR"),
+    class='armaroots'))
+}
+# Compute MA roots
+maroots <- function(object)
+{
+  if(!("Arima" %in% class(object)))
+    stop("object must be of class Arima")
+  parvec <- object$model$theta
+  if(length(parvec) > 0)
+  {
+    last.nonzero <- max(which(abs(parvec) > 1e-08))
+    if (last.nonzero > 0)
+      return(structure(list(
+          roots=polyroot(c(1,parvec[1:last.nonzero])),
+          type="MA"),
+        class='armaroots'))
+  }
+  return(structure(list(roots=numeric(0), type="MA"),
+    class='armaroots'))
+}
+plot.armaroots <- function(x, xlab="Real", ylab="Imaginary",
+    main=paste("Inverse roots of", x$type,
+          "characteristic polynomial"),
+    ...){
+  oldpar <- par(pty='s')
+  on.exit(par(oldpar))
+  plot(c(-1,1), c(-1,1), xlab=xlab, ylab=ylab,
+       type="n", bty="n", xaxt="n", yaxt="n", main=main, ...)
+  axis(1, at=c(-1,0,1), line=0.5, tck=-0.025)
+  axis(2, at=c(-1,0,1), label=c("-i","0","i"),
+    line=0.5, tck=-0.025)
+  circx <- seq(-1,1,l=501)
+  circy <- sqrt(1-circx^2)
+  lines(c(circx,circx), c(circy,-circy), col='gray')
+  lines(c(-2,2), c(0,0), col='gray')
+  lines(c(0,0), c(-2,2), col='gray')
+  if(length(x$roots) > 0)
+  {
+    inside <- abs(x$roots) > 1
+    points(1/x$roots[inside], pch=19, col='black')
+    if(sum(!inside) > 0)
+      points(1/x$roots[!inside], pch=19, col='red')
+  }
+}
+#import dataser
+oil     <- read.csv(file = "oil_data_1.csv")
+#convert to xts
+from    <- as.Date("1973-02-01")
+to      <- as.Date("2007-12-01")
 ```
