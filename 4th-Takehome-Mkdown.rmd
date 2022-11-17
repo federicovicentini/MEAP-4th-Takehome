@@ -59,7 +59,7 @@ h <- 1.05
 l <- 0.97
 ```
 
-Since now the exogenous endowment shock
+Now the exogenous endowment shock
 is a two states Markov process, defined as:
 
 $$\frac{\Omega_{t}}{\Omega_{t-1}}=\omega_{t}\quad 
@@ -67,10 +67,63 @@ $$\frac{\Omega_{t}}{\Omega_{t-1}}=\omega_{t}\quad
 
 With the following symmetric transition matrix:
 
-$$\Pi = \left[\begin{matrix}\phi & (1-\phi) \\ (1-\phi) & \phi \\ \end{matrix}\right]$$
+$$\Pi = \left[\begin{matrix}\phi & (1-\phi) \\ 
+                            (1-\phi) & \phi \\ \end{matrix}\right]$$
 
+Let $\beta = 0.96$, $\gamma=2$, $h=1.05$, $l=0.97$ and $\phi=0.3$.
+
+Knowing this, we cannot use the same 4-cases framework 
+we've seen in class, as the probability of finding ourselves
+in state h or state l now depends on the state of the economy in the
+previous period.
+
+Thus, we will have two different yield curves, conditional on the state
+of the Markov process we are starting with at time t. Let's then compute
+the yield curve for each of the two cases.
 
 ## CASE 1: (t = state h)
+
+In this case, we start in h at time t, so the probability
+matrix (at times $t+1$ and $t+2$) will look like this:
+
+$$\left[\begin{matrix}\phi      & (\phi*\phi)+(1-\phi)*(1-\phi) \\ 
+                      (1-\phi)  & \phi*(1-\phi)+(1-\phi)*\phi\\ 
+        \end{matrix}\right]$$
+
+Looking at the first column it's obvious that, since we find ourselves 
+in $h$ at time $t$, in time $t+1$ we will be still in $h$ with probability
+$\phi$ and we will switch to $l$ with probability $(1-\phi)$. 
+Looking at the second column, we have to think about the ways through
+which we could find ourselves in h at time $t+2$: either we were in $h$
+at time $t$ and we remained there (probability equal to $(\phi*\phi)$) or 
+we were in $l$ at time $t$ and we switched states (probability equal to 
+$(1-\phi)*(1-phi)$). Summing the two probabilities we find the total probability
+of finding ourselves in state $h$ at time $t+2$. The same exact
+reasoning applies to the probability of finding ourselves in state $l$.
+
+
+We can rewrite it as:
+
+
+$$\left[\begin{matrix}\phi      & 2\phi^{2}+1-2\phi\\ 
+                      (1-\phi)  & 2\phi(1-\phi)\\ 
+        \end{matrix}\right]$$
+
+Then, we compute the yield at time $t+1$ and $t+2$ using the following
+code and the two equations:
+
+$$y_{t+1}=-ln \left(\beta*\left(p_{1}(h)*(h)^{-\gamma} +
+                                p_{1}(l)*(l)^{-\gamma}
+              \right)\right)$$
+$$y_{t+2}=-\frac{1}{2}ln \left(\beta^{2} 
+                      \left(p_{1}(h) p_{2}(h) (h^{2})^{-\gamma} +
+                            p_{1}(l) p_{2}(l) (l^{2})^{-\gamma} +
+                            p_{1}(h) p_{2}(l) (hl)^{-\gamma} +
+                            p_{1}(l) p_{2}(h) (lh)^{-\gamma}
+              \right)\right)$$
+
+
+
 
 ```{r p2, message=FALSE, echo=TRUE}
 

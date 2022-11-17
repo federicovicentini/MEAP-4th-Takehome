@@ -407,16 +407,58 @@ kable(matrix,   format = &quot;pipe&quot;,
 gamma &lt;- 2
 h &lt;- 1.05
 l &lt;- 0.97</code></pre>
-<p>Since now the exogenous endowment shock is a two states Markov
-process, defined as:</p>
+<p>Now the exogenous endowment shock is a two states Markov process,
+defined as:</p>
 <p><span class="math display">\[\frac{\Omega_{t}}{\Omega_{t-1}}=\omega_{t}\quad
   with \; \omega_{t}\epsilon (h,l)\]</span></p>
 <p>With the following symmetric transition matrix:</p>
 <p><span class="math display">\[\Pi = \left[\begin{matrix}\phi &amp;
-(1-\phi) \\ (1-\phi) &amp; \phi \\ \end{matrix}\right]\]</span></p>
+(1-\phi) \\
+                            (1-\phi) &amp; \phi \\
+\end{matrix}\right]\]</span></p>
+<p>Let <span class="math inline">\(\beta = 0.96\)</span>, <span class="math inline">\(\gamma=2\)</span>, <span class="math inline">\(h=1.05\)</span>, <span class="math inline">\(l=0.97\)</span> and <span class="math inline">\(\phi=0.3\)</span>.</p>
+<p>Knowing this, we cannot use the same 4-cases framework we’ve seen in
+class, as the probability of finding ourselves in state h or state l now
+depends on the state of the economy in the previous period.</p>
+<p>Thus, we will have two different yield curves, conditional on the
+state of the Markov process we are starting with at time t. Let’s then
+compute the yield curve for each of the two cases.</p>
 </div>
 <div id="case-1-t-state-h" class="section level2">
 <h2>CASE 1: (t = state h)</h2>
+<p>In this case, we start in h at time t, so the probability matrix (at
+times <span class="math inline">\(t+1\)</span> and <span class="math inline">\(t+2\)</span>) will look like this:</p>
+<p><span class="math display">\[\left[\begin{matrix}\phi      &amp;
+(\phi*\phi)+(1-\phi)*(1-\phi) \\
+                      (1-\phi)  &amp; \phi*(1-\phi)+(1-\phi)*\phi\\
+        \end{matrix}\right]\]</span></p>
+<p>Looking at the first column it’s obvious that, since we find
+ourselves in <span class="math inline">\(h\)</span> at time <span class="math inline">\(t\)</span>, in time <span class="math inline">\(t+1\)</span> we will be still in <span class="math inline">\(h\)</span> with probability <span class="math inline">\(\phi\)</span> and we will switch to <span class="math inline">\(l\)</span> with probability <span class="math inline">\((1-\phi)\)</span>. Looking at the second column,
+we have to think about the ways through which we could find ourselves in
+h at time <span class="math inline">\(t+2\)</span>: either we were in
+<span class="math inline">\(h\)</span> at time <span class="math inline">\(t\)</span> and we remained there (probability
+equal to <span class="math inline">\((\phi*\phi)\)</span>) or we were in
+<span class="math inline">\(l\)</span> at time <span class="math inline">\(t\)</span> and we switched states (probability
+equal to <span class="math inline">\((1-\phi)*(1-phi)\)</span>). Summing
+the two probabilities we find the total probability of finding ourselves
+in state <span class="math inline">\(h\)</span> at time <span class="math inline">\(t+2\)</span>. The same exact reasoning applies to
+the probability of finding ourselves in state <span class="math inline">\(l\)</span>.</p>
+<p>We can rewrite it as:</p>
+<p><span class="math display">\[\left[\begin{matrix}\phi      &amp;
+2\phi^{2}+1-2\phi\\
+                      (1-\phi)  &amp; 2\phi(1-\phi)\\
+        \end{matrix}\right]\]</span></p>
+<p>Then, we compute the yield at time <span class="math inline">\(t+1\)</span> and <span class="math inline">\(t+2\)</span> using the following code and the two
+equations:</p>
+<p><span class="math display">\[y_{t+1}=-ln
+\left(\beta*\left(p_{1}(h)*(h)^{-\gamma} +
+                                p_{1}(l)*(l)^{-\gamma}
+              \right)\right)\]</span> <span class="math display">\[y_{t+2}=-\frac{1}{2}ln \left(\beta^{2}
+                      \left(p_{1}(h) p_{2}(h) (h^{2})^{-\gamma} +
+                            p_{1}(l) p_{2}(l) (l^{2})^{-\gamma} +
+                            p_{1}(h) p_{2}(l) (hl)^{-\gamma} +
+                            p_{1}(l) p_{2}(h) (lh)^{-\gamma}
+              \right)\right)\]</span></p>
 <pre class="r"><code>#CASE 1: 
 #In this case we find ourselves in h at time t
 
