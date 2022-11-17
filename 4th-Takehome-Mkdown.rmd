@@ -126,32 +126,4 @@ plot(yieldcurve_l, type="b",  main="Yield curve with t = l")
 
 
 yieldcurve_l
-
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

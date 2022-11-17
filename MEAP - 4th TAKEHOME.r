@@ -71,31 +71,3 @@ plot(yieldcurve_l, type="b")
 
 
 yieldcurve_l
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
