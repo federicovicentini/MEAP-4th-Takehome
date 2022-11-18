@@ -13,7 +13,7 @@ library(pandoc)
 
 
 
-```{r p0, message=FALSE, echo=FALSE}
+```{r p0, message=FALSE, echo=FALSE, include=FALSE}
 # Clear the variables
 rm(list = ls())
 
@@ -35,7 +35,7 @@ library(pandoc)
 
 ## Exercise 1:
 
-```{r p1, message=FALSE, echo=TRUE}
+```{r p1, message=FALSE, echo=FALSE}
 # Clear the variables
 rm(list = ls())
 
@@ -49,9 +49,9 @@ phi <- 0.3
 matrix <- matrix(0,2,2, dimnames=list(c("h","l"),c("h","l")))
 matrix[1,] <- c(phi, (1-phi))
 matrix[2,] <- c((1-phi), phi)
-kable(matrix,   format = "pipe",
-                row.names=TRUE, 
-                col.names=c("h","l"))
+#kable(matrix,   format = "pipe",
+#                row.names=TRUE, 
+#                col.names=c("h","l"))
 
 beta <- 0.96
 gamma <- 2
@@ -277,9 +277,9 @@ behave in a different way.
 library(ecb)
 library(xts)
 library(ggplot2)
-filter1 = list(startPeriod = "2020-06", endPeriod = "2021-06") #filtering time
+filter1 = list(startPeriod = "2020-07", endPeriod = "2022-07") #filtering time
 #import data for spot rates
-sp          <-  matrix(NA, nrow = 277, ncol = 10)
+sp          <-  matrix(NA, nrow = 535, ncol = 10)
 keys        <-  "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_"
 colnamess   <- c()
 for (count in 1:10) {
@@ -294,7 +294,7 @@ for (count in 1:10) {
 colnames(sp)            <- colnamess
 #sp      <- xts(sp,order.by = data$obstime)
 #import data for forward price 
-fw          <-  matrix(NA, nrow = 277, ncol = 10)
+fw          <-  matrix(NA, nrow = 534, ncol = 10)
 keys        <-  "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.IF_"
 colnamess   <- c()
 for (count in 1:10) {
@@ -321,63 +321,79 @@ data <- data.frame(data)
 plot(NULL, xlim = c(0, nrow(data)), ylim = c(-1,1), type = "n", xaxt = 'n', xlab='Maturity', ylab="Rate")
 lines( data$Spot, type = 'b', col = '#0077ff')
 lines(data$Forward, type = 'b', col = '#ff00a2')
+abline(h = 0, col = "black", lty="dashed")
 axis(1, at = 1:nrow(data), labels = rownames(data))
-legend("topright",legend=c("Spot", "Forward"),
+legend("bottomright",legend=c("Spot", "Forward"),
        col=c("#0077ff", "#ff00a2"), lty= 1:1, cex=1)
 title("Yield curve at 2020")
 ```
 
-The plot above represents the spot and forward yield curve in July 2020. The spot yield is entirely 
-in the negative area of interest rate due to the APP of the ECB. Even the forward curve is negative
-until the 8Y maturity. Indeed, In addition, the ECB enlarged the APP program to face the pandemic in the EU countries, 
-lowering the yield curve in the short maturity.
+The plot above represents the spot and forward yield curve in July 
+1st, 2020. 
+The spot yield is entirely in the negative area of interest rate due to the
+Asset Purchase Program (PEPP) put in place by the ECB in response to the
+first impacts of the Covid pandemic.  
+Even the forward curve is negative until the 8Y maturity, reflecting 
+how the ECB enlarged the APP program to face the pandemic 
+in the EU, lowering the yield curve for the short maturities.
 
-The curves are upward-sloping after 3Y, and the forward rate premium becomes higher as
-maturity increases. Suggesting that agents had been expecting the recovery of consumption at the pre-covid level,
-a tightening in the monetary policy, and probably higher inflation rates.
+The curves are upward-sloping after 3Y, and the forward rate premium becomes higher 
+as maturity increases, suggesting that agents had been expecting the recovery of 
+consumption at the pre-covid level, a tightening in the monetary policy,
+or maybe higher inflation rates.
 
-Regarding the maturity before 3Y, the forward rate is above the spot rate, and both have negative slopes. 
-Leading to the belief that the agents had incorporated a recession in the 3 years ahead. As Engstrom and Sharpe (2018)
-find that a near-term negative spread may only predict recessions because it reflects 
-the market's expectation that a contracting economy will induce the central bank to lower its policy rate.
+Regarding the maturity before 3Y, the forward rate is above the spot rate, 
+and both have negative slopes leading us to believe that the agents are predicting
+a recession in the 3 years ahead. 
+Engstrom and Sharpe (2018) find that a near-term negative spread may only
+predict recessions because it reflects the market's expectation that a 
+contracting economy will induce the central bank to lower its policy rate.
 Indeed, the nominal interest rate is driven by the following:
 
-* $E(Inflation rates)$ -> inflation risk premium
-* $E(Monetary policy)$ -> real rate risk premium
+* $E[Inflation \; rates]$ -> inflation risk premium
+* $E[Monetary \; policy]$ -> real rate risk premium
 
-Hence, if investors see higher odds of a recession, the long-term inflation risk premium in Treasury bonds will fall.
-In contrast, an increase in the recession probability would increase the real rate risk premium asked by agents. 
-One interpretation can be that if investors see a greater risk of recession, they will attribute a higher value 
-to short-term assets that they can quickly liquidate to finance spending on goods and services.
-It seems reasonable because the covid had already broken out in July, and the prices incorporated 
-the expectation of future covid measures that hinder consumption.
+Hence, if investors see higher odds of a recession, the long-term inflation
+risk premium in Treasury bonds will fall. In contrast, an increase in the
+recession probability would increase the real rate risk premium asked by agents. 
+One interpretation can be that if investors see a greater risk of recession, 
+they will attribute a higher value to short-term assets that they can quickly
+liquidate to finance spending on goods and services.
+It seems reasonable because the covid pandemic had already broken out in July, 
+and the prices incorporated the expectation of future covid measures 
+that could hinder consumption.
 
-# Plot yield curves 2021
+# Plot yield curves 2022
 
 ```{r plot2, echo=FALSE, include=TRUE}
-data[ ,1]    <- sp[277,]
-data[ ,2]    <- fw[277,]
+data[ ,1]    <- sp[515,]
+data[ ,2]    <- fw[515,]
 colnames(data) <- c("Spot", "Forward")
 rownames(data) <- colnamess
 data <- data.frame(data)
 #plot first
-plot(NULL, xlim = c(0, nrow(data)), ylim = c(-1,1), type = "n", xaxt = 'n', xlab='Maturity', ylab="Rate")
+plot(NULL, xlim = c(0, nrow(data)), ylim = c(-1,2), type = "n", xaxt = 'n', xlab='Maturity', ylab="Rate")
 lines( data$Spot, type = 'b', col = '#0077ff')
 lines(data$Forward, type = 'b', col = '#ff00a2')
+abline(h = 0, col = "black", lty="dashed")
 axis(1, at = 1:nrow(data), labels = rownames(data))
-legend("topright",legend=c("Spot", "Forward"),
+legend("bottomright",legend=c("Spot", "Forward"),
        col=c("#0077ff", "#ff00a2"), lty= 1:1, cex=1)
-title("Yield curve at 2021")
+title("Yield curve at 2022")
 ```
 
-The plot above represents the forward and spot yield curves for different maturity quoted in July 2021.
-Compared to the previous plot, the forward yield curve is steeper. Thus the forward risk premium is higher for each 
-maturity than the last plot. A possible interpretation 
-is that the agents had expected higher inflation, an increase in monetary tightening, asking for
-a higher risk premium.
-Regarding the slopes of the two curves, the forward rate slope is positive, greater in absolute values compared to one year before
-ar reach maturity. While the slope of the spot yield curve is slightly negative until it comes to a minimum at 2Y, then it becomes positive.
-This behaviour can be explained by an increase in the odds of a recession in a short-term span, and this can justify the negative slopes and the negative
-forward risk premium before 2Y maturity.
-While after the 2Y maturity, the slopes and the forward risk premium are positive, this hints that agents believe in
-a positive state of the economy in the long run.
+The plot above represents the forward and spot yield curves for
+different maturities quoted in July 1st, 2022.
+Regarding the slopes of the two curves, they are both 
+positive, and the yields are greater in absolute value
+(compared to two years before) for each maturity.
+This should usually be interpreted as an indication of high
+growth expectations in the market participants. 
+However, in this specific case, they could be linked to higher inflation
+expectations by market participants (or a more restrictive expected
+monetary policy), as it seems unrealistic that in July 2022
+market participants would be so optimistic about the state of the
+european economy in the future. Maybe, in July 2022 the yield curve
+was driven more by the recent spike in the overnight interest rates
+decided by the ECB than by any other epectation about the performance
+of the economy in the near future.
