@@ -271,7 +271,113 @@ gains as the opposite path (gaining $5\%$ and then losing $3\%$). If we add to t
 gains and losses are not equal in magnitude, we have a good explanation of why the two curves
 behave in a different way.
 
-# EXERCISE 2
+# Exercise 2
 
-```{r ex2, include=TRUE}
+```{r ex2, include=FALSE}
+library(ecb)
+library(xts)
+library(ggplot2)
+filter1 = list(startPeriod = "2020-06", endPeriod = "2021-06") #filtering time
+#import data for spot rates
+sp          <-  matrix(NA, nrow = 277, ncol = 10)
+keys        <-  "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_"
+colnamess   <- c()
+for (count in 1:10) {
+    keys_count          <- paste(keys, count, sep = "")
+    keys_count          <- paste(keys_count, "Y", sep = "")
+    data                <- get_data(key = keys_count,filter = filter1)
+    data$obstime        <- convert_dates(data$obstime)
+    colname             <- paste(count, "Y")
+    sp[ ,count]          <- data$obsvalue
+    colnamess           <- cbind(colnamess, colname)
+}
+colnames(sp)            <- colnamess
+#sp      <- xts(sp,order.by = data$obstime)
+#import data for forward price 
+fw          <-  matrix(NA, nrow = 277, ncol = 10)
+keys        <-  "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.IF_"
+colnamess   <- c()
+for (count in 1:10) {
+    keys_count          <- paste(keys, count, sep = "")
+    keys_count          <- paste(keys_count, "Y", sep = "")
+    data                <- get_data(key = keys_count,filter = filter1)
+    data$obstime        <- convert_dates(data$obstime)
+    colname             <- paste(count, "Y")
+    fw[,count]          <- data$obsvalue
+    colnamess           <- cbind(colnamess, colname)
+}
+colnames(fw)            <- colnamess
+#fw      <- xts(fw,order.by = data$obstime)
+year <- 1:10
+data <- matrix(NA, nrow=10, ncol=2)
+data[ ,1]    <- sp[1,]
+data[ ,2]    <- fw[1,]
+colnames(data) <- c("Spot", "Forward")
+rownames(data) <- colnamess
+data <- data.frame(data)
 ```
+# Plot yield curves 2020
+```{r plot1, echo=FALSE, include=TRUE}
+plot(NULL, xlim = c(0, nrow(data)), ylim = c(-1,1), type = "n", xaxt = 'n', xlab='Maturity', ylab="Rate")
+lines( data$Spot, type = 'b', col = '#0077ff')
+lines(data$Forward, type = 'b', col = '#ff00a2')
+axis(1, at = 1:nrow(data), labels = rownames(data))
+legend("topright",legend=c("Spot", "Forward"),
+       col=c("#0077ff", "#ff00a2"), lty= 1:1, cex=1)
+title("Yield curve at 2020")
+```
+
+The plot above represents the spot and forward yield curve in July 2020. The spot yield is entirely 
+in the negative area of interest rate due to the APP of the ECB. Even the forward curve is negative
+until the 8Y maturity. Indeed, In addition, the ECB enlarged the APP program to face the pandemic in the EU countries, 
+lowering the yield curve in the short maturity.
+
+The curves are upward-sloping after 3Y, and the forward rate premium becomes higher as
+maturity increases. Suggesting that agents had been expecting the recovery of consumption at the pre-covid level,
+a tightening in the monetary policy, and probably higher inflation rates.
+
+Regarding the maturity before 3Y, the forward rate is above the spot rate, and both have negative slopes. 
+Leading to the belief that the agents had incorporated a recession in the 3 years ahead. As Engstrom and Sharpe (2018)
+find that a near-term negative spread may only predict recessions because it reflects 
+the market's expectation that a contracting economy will induce the central bank to lower its policy rate.
+Indeed, the nominal interest rate is driven by the following:
+
+* $E(Inflation rates)$ -> inflation risk premium
+* $E(Monetary policy)$ -> real rate risk premium
+
+Hence, if investors see higher odds of a recession, the long-term inflation risk premium in Treasury bonds will fall.
+In contrast, an increase in the recession probability would increase the real rate risk premium asked by agents. 
+One interpretation can be that if investors see a greater risk of recession, they will attribute a higher value 
+to short-term assets that they can quickly liquidate to finance spending on goods and services.
+It seems reasonable because the covid had already broken out in July, and the prices incorporated 
+the expectation of future covid measures that hinder consumption.
+
+# Plot yield curves 2021
+
+```{r plot2, echo=FALSE, include=TRUE}
+data[ ,1]    <- sp[277,]
+data[ ,2]    <- fw[277,]
+colnames(data) <- c("Spot", "Forward")
+rownames(data) <- colnamess
+data <- data.frame(data)
+#plot first
+plot(NULL, xlim = c(0, nrow(data)), ylim = c(-1,1), type = "n", xaxt = 'n', xlab='Maturity', ylab="Rate")
+lines( data$Spot, type = 'b', col = '#0077ff')
+lines(data$Forward, type = 'b', col = '#ff00a2')
+axis(1, at = 1:nrow(data), labels = rownames(data))
+legend("topright",legend=c("Spot", "Forward"),
+       col=c("#0077ff", "#ff00a2"), lty= 1:1, cex=1)
+title("Yield curve at 2021")
+```
+
+The plot above represents the forward and spot yield curves for different maturity quoted in July 2021.
+Compared to the previous plot, the forward yield curve is steeper. Thus the forward risk premium is higher for each 
+maturity than the last plot. A possible interpretation 
+is that the agents had expected higher inflation, an increase in monetary tightening, asking for
+a higher risk premium.
+Regarding the slopes of the two curves, the forward rate slope is positive, greater in absolute values compared to one year before
+ar reach maturity. While the slope of the spot yield curve is slightly negative until it comes to a minimum at 2Y, then it becomes positive.
+This behaviour can be explained by an increase in the odds of a recession in a short-term span, and this can justify the negative slopes and the negative
+forward risk premium before 2Y maturity.
+While after the 2Y maturity, the slopes and the forward risk premium are positive, this hints that agents believe in
+a positive state of the economy in the long run.
